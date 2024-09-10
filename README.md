@@ -3,15 +3,14 @@
 Build and manage infrastructure across two availability zones (AZs) using Terraform, and configure Docker on private machines using Ansible. The project should leverage GitOps practices with your preferred CI/CD tool.
 
 ## Tools Required:
-Terraform: For building the infrastructure.
-Ansible: For configuration management and automation.
-Docker: To be installed on private machines and used for running a container.
-GitOps: For managing configurations and CI/CD processes.
-CI/CD Tools: Choose one (Jenkins, GitHub Actions, or GitLab Pipelines).
-Task Breakdown:
-Terraform Infrastructure Setup:
+ - Terraform: For building the infrastructure.
+ - Ansible: For configuration management and automation.
+ - Docker: To be installed on private machines and used for running a container.
+ - GitOps: For managing configurations and CI/CD processes.
+ - CI/CD Tools: Choose one (Jenkins, GitHub Actions, or GitLab Pipelines).
 
-## Steps
+
+## Terraform Infrastructure Setup:
  - Create VPC and configure network needs.
  - For each AZ, create two subnets: one public and one private.
  - Set up an Auto Scaling Group (ASG) with two instances.

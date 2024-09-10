@@ -9,3 +9,13 @@ variable "vpc_cidr" {
 variable "vpc_name" {
     type        = string
 }
+
+variable "subnets" {
+  
+  type = map(object({
+    cidr   = string   
+    public = bool     
+    az     = string   
+    name   = string   
+  }))
+}

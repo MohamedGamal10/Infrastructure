@@ -9,3 +9,7 @@ output "internet_gateway_id" {
 output "nat_gateway_id" {
   value = module.nat_gateway.nat_gateway_id
 }
+
+output "asg_id" {
+  value = module.asg.asg_id
+}

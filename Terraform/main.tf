@@ -42,7 +42,7 @@ module "asg" {
   ebs_volume_size       = var.ebs_volume_size
   subnet_ids            = module.subnets.private_subnet_ids
   ebs_volume_type       = var.ebs_volume_type
-  key_pair_name         = var.key_pair_name
+  key_pair_name         = var.asg_key_pair_name
   instance_profile_name = var.instance_profile_name
   instance_role_name    = var.instance_role_name
   desired_capacity      = var.desired_capacity
@@ -50,3 +50,15 @@ module "asg" {
   min_size              = var.min_size
 }
 
+module "bastion_host" {
+  source               = "./modules/bastion_host"
+  bastion_name         = "bastion"
+  basion_instance_type = var.basion_instance_type
+  vpc_id               = module.vpc.vpc_id
+  vpc_name             = module.vpc.vpc_name
+  basion_volume_size   = var.basion_volume_size
+  basion_volume_type   = var.basion_volume_type
+  public_subnet_id     = module.subnets.public_subnet_ids[1]
+  basion_ami_id        = var.basion_ami_id
+  basion_key_pair_name = var.basion_key_pair_name
+}

@@ -1,9 +1,9 @@
 variable "vpc_id" {
-  type        = string
+  type = string
 }
 
 variable "vpc_name" {
-  type        = string
+  type = string
 }
 
 variable "public_subnets" {
@@ -21,9 +21,9 @@ variable "private_subnets" {
 }
 
 variable "internet_gateway_id" {
-  type        = string
+  type = string
 }
 
 variable "nat_gateway_id" {
-  type        = string
+  type = string
 }

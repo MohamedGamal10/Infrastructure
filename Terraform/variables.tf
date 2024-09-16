@@ -59,7 +59,7 @@ variable "min_size" {
   type = number
 }
 
-variable "key_pair_name" {
+variable "asg_key_pair_name" {
   type = string
 }
 
@@ -72,5 +72,26 @@ variable "instance_role_name" {
 }
 
 variable "instance_profile_name" {
+  type = string
+}
+
+
+variable "basion_ami_id" {
+  type = string
+}
+
+variable "basion_volume_size" {
+  type = string
+}
+
+variable "basion_volume_type" {
+  type = string
+}
+
+variable "basion_instance_type" {
+  type = string
+}
+
+variable "basion_key_pair_name" {
   type = string
 }

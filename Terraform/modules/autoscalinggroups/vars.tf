@@ -36,31 +36,31 @@ variable "vpc_name" {
 
 
 variable "ebs_volume_type" {
-  type        = string
+  type = string
 }
 
 variable "key_pair_name" {
-  type        = string
+  type = string
 }
 
 variable "instance_role_name" {
-  type        = string
+  type = string
 }
 
 variable "instance_profile_name" {
-  type        = string
+  type = string
 }
 
 variable "vpc_id" {
-  type        = string
+  type = string
 }
 
 variable "vpc_cidr" {
-  type        = string
+  type = string
 }
 
 variable "asg-sg_name" {
-  type        = string
+  type = string
 }
 
 

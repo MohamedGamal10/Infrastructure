@@ -27,15 +27,21 @@ private_subnets = {
 }
 
 
-
-ami_id                = "ami-035d8954fec8a54e0 "
+#AutoScaling Vars
+ami_id                = "ami-03cc8375791cb8bcf"
 instance_type         = "t2.micro"
 ebs_volume_type       = "gp2"
 ebs_volume_size       = 8
 desired_capacity      = 2
 max_size              = 4
 min_size              = 1
-key_pair_name         = "private-asg-key-pair"
+asg_key_pair_name     = "private-asg-key-pair"
 instance_profile_name = "my-instance-profile"
 instance_role_name    = "my-instance-role"
 
+#Basion Vars
+basion_ami_id        = "ami-03cc8375791cb8bcf"
+basion_instance_type = "t2.micro"
+basion_volume_size   = 8
+basion_volume_type   = "gp2"
+basion_key_pair_name = "bastion-key"

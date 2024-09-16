@@ -126,6 +126,9 @@ resource "aws_autoscaling_group" "asg" {
 
 }
 
+
+
+
 resource "aws_autoscaling_policy" "scale_up" {
   name                   = "${var.asg_name}-scale-up"
   scaling_adjustment     = 1

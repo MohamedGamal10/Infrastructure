@@ -1,6 +1,6 @@
 ---
 - name: Install Docker and run Nginx container
-  hosts: all
+  hosts: localhost
   become: yes
   tasks:
     - name: Update apt cache

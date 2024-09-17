@@ -47,6 +47,17 @@ resource "aws_launch_template" "lt" {
     security_groups             = [aws_security_group.asg-sg.id]
   }
 
+  user_data = base64encode(<<EOF
+      #!/bin/bash
+      sudo apt-get update -y
+      sudo apt-get install -y ansible
+      sudo mkdir -p /opt/playbook
+      sudo wget https://raw.githubusercontent.com/MohamedGamal10/Infrastructure/master/playbooks/asg-playbook.yml
+      cd /opt/playbook
+      ansible-playbook asg-playbook.yml
+      EOF
+      )
+
   lifecycle {
     create_before_destroy = true
   }

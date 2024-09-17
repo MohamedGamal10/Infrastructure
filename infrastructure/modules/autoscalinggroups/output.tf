@@ -17,7 +17,6 @@ data "aws_instances" "asg_instances" {
   }
 }
 
-
 output "asg_instance_private_ips" {
   value = data.aws_instances.asg_instances.private_ips
 }

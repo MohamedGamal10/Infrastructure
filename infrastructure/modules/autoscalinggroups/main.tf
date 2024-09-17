@@ -134,10 +134,8 @@ resource "aws_autoscaling_group" "asg" {
     create_before_destroy = true
   }
 
+
 }
-
-
-
 
 resource "aws_autoscaling_policy" "scale_up" {
   name                   = "${var.asg_name}-scale-up"
@@ -154,3 +152,4 @@ resource "aws_autoscaling_policy" "scale_down" {
   cooldown               = 300
   autoscaling_group_name = aws_autoscaling_group.asg.name
 }
+

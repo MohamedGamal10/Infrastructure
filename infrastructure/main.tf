@@ -32,7 +32,7 @@ module "subnets" {
 
 module "asg" {
   source                = "./modules/autoscalinggroups"
-  asg-sg_name           = "asg-sg"
+  asg_sg_name           = "asg-sg"
   asg_name              = "asg"
   vpc_id                = module.vpc.vpc_id
   vpc_name              = module.vpc.vpc_name

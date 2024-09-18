@@ -59,7 +59,7 @@ variable "vpc_cidr" {
   type = string
 }
 
-variable "asg-sg_name" {
+variable "asg_sg_name" {
   type = string
 }
 

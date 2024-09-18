@@ -44,7 +44,7 @@ resource "aws_launch_template" "lt" {
 
   network_interfaces {
     associate_public_ip_address = false
-    security_groups             = [aws_security_group.asg-sg.id]
+    security_groups             = [aws_security_group.asg_sg.id]
   }
 
   user_data = base64encode(<<EOF
@@ -84,8 +84,8 @@ resource "aws_launch_template" "lt" {
   }
 }
 
-resource "aws_security_group" "asg-sg" {
-  name   = var.asg-sg_name
+resource "aws_security_group" "asg_sg" {
+  name   = var.asg_sg_name
   vpc_id = var.vpc_id
 
   ingress {
@@ -103,7 +103,7 @@ resource "aws_security_group" "asg-sg" {
   }
 
   tags = {
-    Name = "${var.vpc_name}-${var.asg-sg_name}"
+    Name = "${var.vpc_name}-${var.asg_sg_name}"
   }
 }
 
@@ -120,7 +120,7 @@ resource "aws_autoscaling_group" "asg" {
 
   launch_template {
     id      = aws_launch_template.lt.id
-    version = "$Latest"
+    version = "$LATEST"
   }
 
   tag {

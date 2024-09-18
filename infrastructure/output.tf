@@ -18,4 +18,3 @@ output "asg_private_instance_ips" {
 output "bastion_public_ip" {
   value       = module.bastion_host.bastion_public_ip
 }
-

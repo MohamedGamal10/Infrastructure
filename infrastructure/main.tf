@@ -62,3 +62,43 @@ module "bastion_host" {
   basion_ami_id        = var.basion_ami_id
   basion_key_pair_name = var.basion_key_pair_name
 }
+
+resource "local_file" "ansible_inventory" {
+  content = templatefile("${path.module}/inventory.tpl", {
+    bastion_public_ip = module.bastion_host.bastion_public_ip
+    private_ips       = module.asg.asg_instance_private_ips
+    bastion_key_path  = module.bastion_host.bastion_private_key_path
+    asg_key_path      = module.asg.asg_private_key_path
+  })
+  filename = "${path.module}/../playbooks/inventory.ini"
+}
+
+resource "null_resource" "fix_key_permissions" {
+  depends_on = [module.bastion_host, module.asg]
+
+  provisioner "local-exec" {
+    command = <<-EOT
+      chmod 400 ${module.bastion_host.bastion_private_key_path}
+      chmod 400 ${module.asg.asg_private_key_path}
+    EOT
+  }
+}
+
+
+resource "null_resource" "run_ansible" {
+  depends_on = [module.asg, module.bastion_host, local_file.ansible_inventory, null_resource.fix_key_permissions]
+
+  provisioner "local-exec" {
+    command = <<-EOT
+      scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ${module.bastion_host.bastion_private_key_path} ${module.bastion_host.bastion_private_key_path} ${path.module}/modules/autoscalinggroups/keys/${var.asg_key_pair_name}.pem ${path.module}/../playbooks/inventory.ini ${path.module}/../playbooks/asg-playbook.yml ubuntu@${module.bastion_host.bastion_public_ip}:~
+      ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ${module.bastion_host.bastion_private_key_path} ubuntu@${module.bastion_host.bastion_public_ip} '
+        chmod 400 ~/${basename(module.bastion_host.bastion_private_key_path)}
+        chmod 400 ~/${var.asg_key_pair_name}.pem
+        sudo apt update
+        sudo apt install -y ansible
+        sleep 5
+        ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory.ini asg-playbook.yml
+      '
+    EOT
+  }
+}

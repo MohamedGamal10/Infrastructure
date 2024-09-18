@@ -6,6 +6,9 @@ output "asg_name" {
   value = aws_autoscaling_group.asg.name
 }
 
+output "asg_private_key_path" {
+  value = local_file.private_key.filename
+}
 
 output "launch_template_id" {
   value = aws_launch_template.lt.id

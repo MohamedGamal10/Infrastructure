@@ -91,14 +91,15 @@ resource "null_resource" "run_ansible" {
   provisioner "local-exec" {
     command = <<-EOT
       scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ${module.bastion_host.bastion_private_key_path} ${module.bastion_host.bastion_private_key_path} ${path.module}/modules/autoscalinggroups/keys/${var.asg_key_pair_name}.pem ${path.module}/../playbooks/inventory.ini ${path.module}/../playbooks/asg-playbook.yml ubuntu@${module.bastion_host.bastion_public_ip}:~
-      ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ${module.bastion_host.bastion_private_key_path} ubuntu@${module.bastion_host.bastion_public_ip} '
+      ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ${module.bastion_host.bastion_private_key_path} ubuntu@${module.bastion_host.bastion_public_ip} "
         chmod 400 ~/${basename(module.bastion_host.bastion_private_key_path)}
         chmod 400 ~/${var.asg_key_pair_name}.pem
         sudo apt update
         sudo apt install -y ansible
         sleep 5
-        ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory.ini asg-playbook.yml
-      '
+        ansible-playbook -i inventory.ini asg-playbook.yml --private-key=private-asg-key-pair.pem --ssh-common-args='-o StrictHostKeyChecking=no'
+        rm -f *.pem
+        "
     EOT
   }
 }

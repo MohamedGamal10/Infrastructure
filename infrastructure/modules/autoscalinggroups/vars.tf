@@ -62,5 +62,3 @@ variable "vpc_cidr" {
 variable "asg_sg_name" {
   type = string
 }
-
-

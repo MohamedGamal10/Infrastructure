@@ -103,3 +103,19 @@ resource "null_resource" "run_ansible" {
     EOT
   }
 }
+
+module "load_balancer" {
+  source                     = "./modules/load_balancer"
+  lb_name                    = "lb"
+  vpc_id                     = module.vpc.vpc_id
+  vpc_name                   = module.vpc.vpc_name
+  public_subnet_ids          = module.subnets.public_subnet_ids[*]
+  asg_name                   = module.asg.asg_name
+  enable_deletion_protection = false
+  idle_timeout               = 60
+}
+
+resource "aws_autoscaling_attachment" "asg_attachment" {
+  autoscaling_group_name = module.asg.asg_name
+  lb_target_group_arn    = module.load_balancer.target_group_arn
+}

@@ -1,0 +1,17 @@
+asg_private_instance_ips = tolist([
+  "10.0.2.223",
+  "10.0.4.93",
+])
+bastion_public_ip = "3.249.67.83"
+load_balancer_arn = "arn:aws:elasticloadbalancing:eu-west-1:026090548914:loadbalancer/app/lb/3db59e84a6907d53"
+load_balancer_dns_name = "lb-1268213160.eu-west-1.elb.amazonaws.com"
+private_subnet_cidr = [
+  "10.0.2.0/24",
+  "10.0.4.0/24",
+]
+public_subnet_cidr = [
+  "10.0.1.0/24",
+  "10.0.3.0/24",
+]
+target_group_arn = "arn:aws:elasticloadbalancing:eu-west-1:026090548914:targetgroup/lb-tg/fa7e20c7d98ed8b1"
+vpc_cidr_block = "10.0.0.0/16"

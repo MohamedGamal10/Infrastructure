@@ -9,7 +9,11 @@ pipeline {
     stages {
         stage('Pull Repo') {
             steps {
-              git url: 'https://github.com/MohamedGamal10/Infrastructure.git'
+                script{
+                    dir("${env.WORKSPACE}") {
+                        git url: 'https://github.com/MohamedGamal10/Infrastructure.git'
+                    }
+                }
             }
         }
 

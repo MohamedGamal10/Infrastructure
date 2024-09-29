@@ -6,19 +6,24 @@ pipeline {
             steps {
                 script {
                     withAWS(credentials: 'aws_cred', region: 'eu-west-1') {
-                        // Run the AWS CLI command to get the number of running EC2 instances
-                        def runningInstances = sh(
-                            script: '''
-                            aws ec2 describe-instances \
-                                --filters "Name=instance-state-name,Values=running" \
-                                --query "Reservations[*].Instances[*].InstanceId" \
-                                --output text | wc -w
-                            ''',
-                            returnStdout: true
-                        ).trim()
+                     // Retrieve private IPs of EC2 instances in the ASG
+                    def privateIps = sh(returnStdout: true, script: """
+                        aws autoscaling describe-auto-scaling-instances --query 'AutoScalingInstances[?AutoScalingGroupName==`$ASG_NAME`].InstanceId' --output text | \
+                        xargs -I {} aws ec2 describe-instances --instance-ids {} \
+                        --query 'Reservations[*].Instances[*].PrivateIpAddress' --output text
+                    """).trim().split()
 
-                        // Print the number of running instances
-                        echo "Number of running EC2 instances: ${runningInstances}"
+                    // Loop over each private IP and SSH to deploy the Docker image
+                    for (ip in privateIps) {
+                        sh """
+                        ssh -i $SSH_KEY -o ProxyCommand="ssh -i $SSH_KEY -W %h:%p ec2-user@$BASTION_HOST" ec2-user@$ip << EOF
+                            docker stop my-react-app || true
+                            docker rm my-react-app || true
+                            docker pull $DOCKER_IMAGE
+                            docker run -d --name my-react-app -p80:80 $DOCKER_IMAGE
+                        EOF
+                        """
+                    }
                     }
                 }
             }

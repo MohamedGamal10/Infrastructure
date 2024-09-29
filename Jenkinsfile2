@@ -1,0 +1,27 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Get Running EC2 Instances') {
+            steps {
+                script {
+                    withAWS(credentials: 'aws_cred', region: 'eu-west-1') {
+                        // Run the AWS CLI command to get the number of running EC2 instances
+                        def runningInstances = sh(
+                            script: '''
+                            aws ec2 describe-instances \
+                                --filters "Name=instance-state-name,Values=running" \
+                                --query "Reservations[*].Instances[*].InstanceId" \
+                                --output text | wc -w
+                            ''',
+                            returnStdout: true
+                        ).trim()
+
+                        // Print the number of running instances
+                        echo "Number of running EC2 instances: ${runningInstances}"
+                    }
+                }
+            }
+        }
+    }
+}

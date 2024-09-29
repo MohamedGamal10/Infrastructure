@@ -10,7 +10,6 @@ pipeline {
     stages {
         stage('Pull Repo') {
             steps {
-                // Using git step with branch specification if needed
                 git branch: 'main', url: 'https://github.com/MohamedGamal10/Infrastructure.git'
             }
         }

@@ -1,11 +1,12 @@
 pipeline {
     agent any
     environment {
-        DOCKER_IMAGE = "my-react-app:${BUILD_NUMBER}"
-        BASTION_HOST = "bastion_host_ip"
-        SSH_KEY = "/path/to/private_key.pem"
-        AWS_REGION = "your_aws_region"
-        ASG_NAME = "your_asg_name"
+        DOCKER_IMAGE = "mohamedgamal10/my-react-app:$BUILD_NUMBER"
+        BASTION_HOST = $bastion_host_ip
+        PUBLIC_KEY   = $bastion-key
+        PRIVATE_KEY  = $asg-key
+        AWS_REGION   = "eu-west-1"
+        ASG_NAME     = "main-asg"
     }
 
     stages {
@@ -34,24 +35,26 @@ pipeline {
         
         stage('Deploy to ASG Instances') {
             steps {
-                script {
-                    // Retrieve private IPs of EC2 instances in the ASG
-                    def privateIps = sh(returnStdout: true, script: """
-                        aws autoscaling describe-auto-scaling-instances --query 'AutoScalingInstances[?AutoScalingGroupName==`$ASG_NAME`].InstanceId' --output text | \
-                        xargs -I {} aws ec2 describe-instances --instance-ids {} \
-                        --query 'Reservations[*].Instances[*].PrivateIpAddress' --output text
-                    """).trim().split()
+                script { 
+                    withAWS(credentials: 'aws_cred', region: $AWS_REGION) {
+                        // Retrieve private IPs of EC2 instances in the ASG
+                        def privateIps = sh(returnStdout: true, script: """
+                            aws autoscaling describe-auto-scaling-instances --query 'AutoScalingInstances[?AutoScalingGroupName==`$ASG_NAME`].InstanceId' --output text | \
+                            xargs -I {} aws ec2 describe-instances --instance-ids {} \
+                            --query 'Reservations[*].Instances[*].PrivateIpAddress' --output text
+                        """).trim().split()
 
-                    // Loop over each private IP and SSH to deploy the Docker image
-                    for (ip in privateIps) {
-                        sh """
-                        ssh -i $SSH_KEY -o ProxyCommand="ssh -i $SSH_KEY -W %h:%p ec2-user@$BASTION_HOST" ec2-user@$ip << EOF
-                            docker stop my-react-app || true
-                            docker rm my-react-app || true
-                            docker pull $DOCKER_IMAGE
-                            docker run -d --name my-react-app -p80:80 $DOCKER_IMAGE
-                        EOF
-                        """
+                        // Loop over each private IP and SSH to deploy the Docker image
+                        for (ip in privateIps) {
+                            sh """
+                            ssh -i $PUBLIC_KEY -o ProxyCommand="ssh -i $PUBLIC_KEY -W %h:%p ubuntu@$BASTION_HOST" -i $PRIVATE_KEY ubuntu@$ip << EOF
+                                docker stop my-react-app
+                                docker rm my-react-app
+                                docker pull $DOCKER_IMAGE
+                                docker run -d --name my-react-app -p 80:80 $DOCKER_IMAGE
+                            EOF
+                            """
+                        }
                     }
                 }
             }

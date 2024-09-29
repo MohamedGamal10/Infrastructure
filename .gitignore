@@ -4,6 +4,10 @@ terraform.tfstate
 terraform.tfstate.backup
 .pem
 inventory
+infrastructure/modules/autoscalinggroups/keys/*
+infrastructure/modules/bastion_host/keys/*
+playbooks/inventory.ini
+
 
 # dependencies
 /node_modules

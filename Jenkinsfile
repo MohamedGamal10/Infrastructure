@@ -2,9 +2,9 @@ pipeline {
     agent any
     environment {
         DOCKER_IMAGE = "mohamedgamal10/my-react-app:$BUILD_NUMBER"
-        BASTION_HOST = $bastion_host_ip
-        PUBLIC_KEY   = $bastion-key
-        PRIVATE_KEY  = $asg-key
+        BASTION_HOST = ${bastion_host_ip}
+        PUBLIC_KEY   = ${bastion-key}
+        PRIVATE_KEY  = ${asg-key}
         AWS_REGION   = "eu-west-1"
         ASG_NAME     = "main-asg"
     }

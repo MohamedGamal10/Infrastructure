@@ -4,16 +4,18 @@ pipeline {
         DOCKER_IMAGE = "mohamedgamal10/my-react-app:$BUILD_NUMBER"
         AWS_REGION   = "eu-west-1"
         ASG_NAME     = "main-asg"
+        BASTION_HOST = "${bastion_host_ip}"
     }
 
     stages {
         stage('Pull Repo') {
             steps {
-              git url: 'https://github.com/MohamedGamal10/Infrastructure.git'
+                // Using git step with branch specification if needed
+                git branch: 'main', url: 'https://github.com/MohamedGamal10/Infrastructure.git'
             }
         }
 
-        stage('Push Docker Image') {
+        stage('Build and Push Docker Image') {
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'docker_cred', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
@@ -31,8 +33,8 @@ pipeline {
         stage('Deploy to ASG Instances') {
             steps {
                 script {
-                    // Retrieve private IPs of EC2 instances in the ASG
                     withAWS(credentials: 'aws_cred', region: AWS_REGION) {
+                        // Retrieve private IPs of EC2 instances in the ASG
                         def privateIps = sh(returnStdout: true, script: """
                             aws autoscaling describe-auto-scaling-instances --query 'AutoScalingInstances[?AutoScalingGroupName==`$ASG_NAME`].InstanceId' --output text | \
                             xargs -I {} aws ec2 describe-instances --instance-ids {} \
@@ -43,7 +45,8 @@ pipeline {
                                          sshUserPrivateKey(credentialsId: 'asg-key', keyFileVariable: 'PRIVATE_KEY')]) {
                             for (ip in privateIps) {
                                 sh """
-                                ssh -i $PUBLIC_KEY -o ProxyCommand="ssh -i $PUBLIC_KEY -W %h:%p ubuntu@$BASTION_HOST" -i $PRIVATE_KEY ubuntu@$ip << EOF
+                                ssh -i $PUBLIC_KEY -o StrictHostKeyChecking=no -o ProxyCommand="ssh -i $PUBLIC_KEY -W %h:%p ubuntu@$BASTION_HOST" \
+                                -i $PRIVATE_KEY ubuntu@$ip << EOF
                                     docker stop my-react-app || true
                                     docker rm my-react-app || true
                                     docker pull $DOCKER_IMAGE

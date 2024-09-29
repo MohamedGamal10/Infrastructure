@@ -43,12 +43,13 @@
     - name: Pull Nginx Docker image
       docker_image:
         name: mohamedgamal10/my-react-app
+        tag: "14"
         source: pull
 
     - name: Run Nginx container
       docker_container:
         name: my-react-app
-        image: mohamedgamal10/my-react-app
+        image: mohamedgamal10/my-react-app:14
         state: started
         ports:
           - "80:80"

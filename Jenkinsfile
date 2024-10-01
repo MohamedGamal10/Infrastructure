@@ -10,7 +10,9 @@ pipeline {
     stages {
         stage('Pull Repo') {
             steps {
-                git branch: 'main', url: 'https://github.com/MohamedGamal10/Infrastructure.git'
+                 sh '''
+                    git clone https://github.com/MohamedGamal10/Infrastructure.git
+                    '''
             }
         }
 
@@ -19,7 +21,7 @@ pipeline {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'docker_cred', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                         sh '''
-                        cd app
+                        cd Infrastructure/app
                         docker build -t ${USERNAME}/my-react-app:${BUILD_NUMBER} .
                         echo "${PASSWORD}" | docker login -u "${USERNAME}" --password-stdin
                         docker push ${USERNAME}/my-react-app:${BUILD_NUMBER}

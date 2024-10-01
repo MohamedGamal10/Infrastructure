@@ -4,7 +4,7 @@ pipeline {
         DOCKER_IMAGE = "mohamedgamal10/my-react-app:$BUILD_NUMBER"
         AWS_REGION   = "eu-west-1"
         ASG_NAME     = "terraform-20241001215659470200000004"
-        BASTION_HOST = "${bastion_host_ip}"
+        BASTION_HOST = "52.19.75.122"
     }
 
     stages {

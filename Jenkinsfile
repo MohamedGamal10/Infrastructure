@@ -37,7 +37,7 @@ pipeline {
                     withAWS(credentials: 'aws_cred', region: AWS_REGION) {
                         // Retrieve private IPs of EC2 instances in the ASG
                         def privateIps = sh(returnStdout: true, script: """
-                            aws autoscaling describe-auto-scaling-instances --query 'AutoScalingInstances[?AutoScalingGroupName==\`${ASG_NAME}\`].InstanceId' \
+                            aws autoscaling describe-auto-scaling-instances --query 'AutoScalingInstances[?AutoScalingGroupName==`${ASG_NAME}`].InstanceId' \
                             --output text | tr '\t' '\n' | xargs -I {} aws ec2 describe-instances --instance-ids {} --query 'Reservations[*].Instances[*].PrivateIpAddress' --output text
                         """).trim().split()
 

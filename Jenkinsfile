@@ -3,8 +3,8 @@ pipeline {
     environment {
         DOCKER_IMAGE = "mohamedgamal10/my-react-app:$BUILD_NUMBER"
         AWS_REGION   = "eu-west-1"
-        ASG_NAME     = "terraform-20241001215659470200000004"
-        BASTION_HOST = "52.19.75.122"
+        ASG_NAME     = "main-asg"
+        BASTION_HOST = "${bastion_host_ip}"
     }
 
     stages {
@@ -47,12 +47,10 @@ pipeline {
                                 echo "Connecting to instance: $ip via Bastion Host: $BASTION_HOST"
                                 sh """
                                 ssh -i ${PUBLIC_KEY} -o StrictHostKeyChecking=no -o ProxyCommand="ssh -i ${PUBLIC_KEY} -W %h:%p ubuntu@${BASTION_HOST}" ubuntu@$ip << EOF
-                                    if [[ \$(docker ps -q -f name=my-react-app) ]]; then
-                                        docker stop my-react-app
-                                        docker rm my-react-app
-                                    fi
+                                    docker stop my-react-app
+                                    docker rm my-react-app
                                     docker pull $DOCKER_IMAGE
-                                    docker run -d --restart unless-stopped --name my-react-app -p 80:80 $DOCKER_IMAGE
+                                    docker run -d --name my-react-app -p80:80 $DOCKER_IMAGE
                                 EOF
                                 """
                             }

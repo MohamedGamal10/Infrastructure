@@ -37,9 +37,8 @@ pipeline {
                     withAWS(credentials: 'aws_cred', region: AWS_REGION) {
                         // Retrieve private IPs of EC2 instances in the ASG
                         def privateIps = sh(returnStdout: true, script: """
-                            aws autoscaling describe-auto-scaling-instances --query 'AutoScalingInstances[?AutoScalingGroupName==`$ASG_NAME`].InstanceId' --output text | \
-                            xargs -I {} aws ec2 describe-instances --instance-ids {} \
-                            --query 'Reservations[*].Instances[*].PrivateIpAddress' --output text
+                            aws autoscaling describe-auto-scaling-instances --query 'AutoScalingInstances[?AutoScalingGroupName==`terraform-20241001215659470200000004`].InstanceId' \
+                            --output text | tr '\t' '\n' | xargs -I {} aws ec2 describe-instances --instance-ids {} --query 'Reservations[*].Instances[*].PrivateIpAddress' --output text
                         """).trim().split()
 
                         withCredentials([sshUserPrivateKey(credentialsId: 'bastion-key', keyFileVariable: 'PUBLIC_KEY'),
